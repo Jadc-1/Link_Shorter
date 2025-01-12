@@ -22,8 +22,13 @@ class LinkSchema(ModelSchema):
         return cls(
             redirect_link= instance.redirect_link,
             token = instance.token,
-            expiration_time = int(instance.expiration_time.total_seconds()//60),
+            expiration_time = int(instance.expiration_time.total_seconds() // 60),
             max_uniques_cliques = instance.max_uniques_cliques
 
         )
         
+class UpdateLinkSchema(Schema):
+ redirect_link: str = None
+ token: str = None
+ max_uniques_cliques: int = None
+ active: bool = None

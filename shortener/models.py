@@ -5,7 +5,7 @@ from django.utils import timezone
 class Links(models.Model):
     redirect_link = models.URLField()
     token = models.CharField(max_length=12, unique=True, null=True, blank=True)
-    create_at = models.DateTimeField(null=True, blank=True)
+    create_at = models.DateTimeField(auto_now_add=True)
     expiration_time = models.DurationField(null=True,blank=True)
     max_uniques_cliques = models.PositiveIntegerField(null=True, blank=True)
     active = models.BooleanField(default=True)
@@ -23,9 +23,13 @@ class Links(models.Model):
 
     def expired(self):
         return True if timezone.now() > (self.create_at + self.expiration_time) else False
+
     
 class Clicks(models.Model):
     link = models.ForeignKey(Links, on_delete = models.CASCADE) ##se deletar a tabela LINKS os objetos filhos (relacionados) também serão deletados
     ip = models.GenericIPAddressField()
     create_at = models.DateTimeField(auto_now_add=True)
+
+
+    
         
