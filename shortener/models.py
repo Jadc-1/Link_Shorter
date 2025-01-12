@@ -25,7 +25,7 @@ class Links(models.Model):
         return True if timezone.now() > (self.create_at + self.expiration_time) else False
     
 class Clicks(models.Model):
-    link = models.ForeignKey(Links, on_delete = models.CASCADE)
+    link = models.ForeignKey(Links, on_delete = models.CASCADE) ##se deletar a tabela LINKS os objetos filhos (relacionados) também serão deletados
     ip = models.GenericIPAddressField()
     create_at = models.DateTimeField(auto_now_add=True)
         
