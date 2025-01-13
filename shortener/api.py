@@ -2,6 +2,9 @@ from ninja import Router
 from .schemas import LinkSchema, UpdateLinkSchema
 from .models import Links, Clicks
 from django.shortcuts import get_object_or_404, redirect
+import qrcode
+from io import BytesIO
+import base64
 ##Tipo de requisição - CONVENÇÃO
 ## GET - Listar todos links cadastrados
 ## POST - Criar novo link
@@ -67,3 +70,30 @@ def statistics(request, link_id: int):
     uniques_clicks = Clicks.objects.filter(link=link).values('ip').distinct().count()
     total_clicks = Clicks.objects.filter(link=link).values('ip').count()
     return 200, {'uniques_clicks': uniques_clicks, 'total_clicks': total_clicks}
+
+def get_api_url(request, token):
+    scheme = request.scheme
+    host = request.get_host()
+    return f'{scheme}://{host}/api/{token}'
+
+def get_api_url(request, token):
+    scheme = request.scheme
+    host = request.get_host()
+    return f"{scheme}://{host}/api/{token}"
+@shortener_router.get("qrcode/{link_id}/", response={200: dict})
+def get_qrcode(request, link_id: int):
+    link = get_object_or_404(Links, id=link_id)
+    qr = qrcode.QRCode(
+    version=1,
+    error_correction=qrcode.constants.ERROR_CORRECT_L,
+    box_size=10,
+    border=4,
+    )
+    print(get_api_url(request, link.token))
+    qr.add_data(get_api_url(request, link.token))
+    qr.make(fit=True)
+    content = BytesIO()
+    img = qr.make_image(fill_color="black", back_color="white")
+    img.save(content)
+    data = base64.b64encode(content.getvalue()).decode('UTF-8')
+    return 200, {'content_image': data}
